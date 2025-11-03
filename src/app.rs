@@ -1,3 +1,4 @@
+use super::cli::Args;
 use color_eyre::Result;
 use ratatui::{
     DefaultTerminal, Frame,
@@ -17,6 +18,13 @@ pub struct App {
 }
 
 impl App {
+    pub fn new(args: Args) -> Self {
+        App {
+            counter: args.init_count,
+            exit: false,
+        }
+    }
+
     pub fn run(&mut self, mut terminal: DefaultTerminal) -> Result<()> {
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
@@ -44,8 +52,8 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
-            KeyCode::Char('j') => self.increment_counter(),
-            KeyCode::Char('k') => self.decrement_counter(),
+            KeyCode::Right => self.increment_counter(),
+            KeyCode::Left => self.decrement_counter(),
             _ => {}
         }
     }
@@ -66,9 +74,9 @@ impl Widget for &App {
         let title = Line::from(" Counter App Tutorial ".bold());
         let instructions = Line::from(vec![
             " Decrement ".into(),
-            "<j>".blue().bold(),
+            "<Left>".blue().bold(),
             " Increment ".into(),
-            "<k>".blue().bold(),
+            "<Right>".blue().bold(),
             " Quit ".into(),
             "<Q> ".blue().bold(),
         ]);
